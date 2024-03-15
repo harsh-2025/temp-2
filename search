@@ -1,0 +1,74 @@
+<script>
+    // Function to parse query parameters from the URL
+    const apiEndpoint = 'https://sheet.best/api/sheets/15932820-d4fc-4809-aef6-2f2d04e71ca5';
+// Function to fetch data from the spreadsheet
+async function fetchData(city, area, rent, bedrooms) {
+  try {
+    // Construct the API URL with query parameters
+    const apiUrl = `${apiEndpoint}?city=${encodeURIComponent(city)}&area=${encodeURIComponent(area)}&rent=${encodeURIComponent(rent)}&bedrooms=${encodeURIComponent(bedrooms)}`;
+
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    const data = await response.json();
+
+    // Filter data based on search criteria
+    const searchData = data.filter(item =>
+      item.city === city &&
+      item.area === area &&
+      item.rent === rent &&
+      item.bedrooms === bedrooms
+    );
+
+    // Display the filtered data in a table
+    displayDataInTable(searchData);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+
+function displayDataInTable(data) {
+  // Get the container element where the table will be displayed
+  const container = document.getElementById('tableContainer');
+
+  // Create the table element
+  const table = document.createElement('table');
+  table.border = '1'; // Add border to the table
+
+  // Create the table header row
+  const headerRow = document.createElement('tr');
+  const headers = ['City', 'Area', 'Rent', 'Bedrooms'];
+  headers.forEach(headerText => {
+    const headerCell = document.createElement('th');
+    headerCell.textContent = headerText;
+    headerRow.appendChild(headerCell);
+  });
+  table.appendChild(headerRow);
+
+  // Create table rows with data
+  data.forEach(rowData => {
+    const row = document.createElement('tr');
+    ['city', 'area', 'rent', 'bedrooms'].forEach(fieldName => {
+      const cell = document.createElement('td');
+      cell.textContent = rowData[fieldName];
+      row.appendChild(cell);
+    });
+    table.appendChild(row);
+  });
+
+  // Append the table to the container element
+  container.innerHTML = ''; // Clear previous content
+  container.appendChild(table);
+}
+
+// Example usage:
+const city = 'abc';
+const area = 'abc';
+const rent = '1'; // Assuming rent is a string, adjust as needed
+const bedrooms = '1'; // Assuming bedrooms is a string, adjust as needed
+
+// Call the fetchData function with the search criteria
+fetchData(city, area, rent, bedrooms);
+
+</script>
